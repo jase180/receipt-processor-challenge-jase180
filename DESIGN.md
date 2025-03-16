@@ -82,6 +82,12 @@ This project involves building a receipt processor webservice that fulfills API 
 
 ### models (`models.go`)
 - Contains structs for receipt and memory
+- Uses structs rather than interface because only in memory storage required
+
+### Memory (`memory.go`)
+- Contains struct and methods for initializing an in memory database
+- Contains methods for adding and retrieving receipts
+    - Does not contain methods for editing or removing because not in scope
 
 ### Rules (`rules.go`)
 - Functions for calculating points
