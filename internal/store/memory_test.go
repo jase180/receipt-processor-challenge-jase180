@@ -22,7 +22,7 @@ func TestMemoryDataBaseCreation(t *testing.T) {
 func TestMemoryDatabaseFunctions(t *testing.T) {
 	db := NewMemoryDatabase()
 
-	//given example: morning-receipt
+	// given example: morning-receipt
 	receiptMorning := models.Receipt{
 		ID:           uuid.NewString(), // Generate a new id with google/uuid
 		Retailer:     "Walgreens",
@@ -35,7 +35,7 @@ func TestMemoryDatabaseFunctions(t *testing.T) {
 		},
 	}
 
-	//given example: simple-receipt
+	// given example: simple-receipt
 	receiptSimple := models.Receipt{
 		ID:           uuid.NewString(),
 		Retailer:     "Target",
@@ -91,7 +91,7 @@ func TestMemoryDatabaseFunctions(t *testing.T) {
 func TestMemoryDatabaseConcurrency(t *testing.T) {
 	db := NewMemoryDatabase()
 
-	//given example: morning-receipt
+	// iven example: morning-receipt
 	receiptMorning := models.Receipt{
 		ID:           uuid.NewString(), // Generate a new id with google/uuid
 		Retailer:     "Walgreens",
@@ -150,5 +150,4 @@ func TestMemoryDatabaseConcurrency(t *testing.T) {
 	}
 
 	waitGroup.Wait() // this ensures all go routines finish
-
 }

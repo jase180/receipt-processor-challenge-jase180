@@ -20,7 +20,7 @@ type MemoryDatabase struct {
 	receipts map[string]models.Receipt // Stores receipts in memory
 }
 
-// NewMemoryDatabase initializes and returns a new in-memory database (written in a less idiomatic Go style, but slightly clearer)
+// NewMemoryDatabase initializes and returns a new in-memory database
 func NewMemoryDatabase() *MemoryDatabase {
 	db := &MemoryDatabase{}                       // initiates a db
 	db.receipts = make(map[string]models.Receipt) // makes a map with the Receipt() struct from models
@@ -45,16 +45,14 @@ func (db *MemoryDatabase) AddReceipt(receipt models.Receipt) error {
 	return nil
 }
 
-// GetReceiptByID retrieves the receipt from the memory database with the ID
+// GetReceiptByID retrieves the receipt from the memory database with the ID after checking if ID exists
 func (db *MemoryDatabase) GetReceiptByID(id string) (models.Receipt, error) {
 	// Manual lock/unlock to ensure go concurrency, only one goroutine allowed access at a time
 	db.lock.RLock()
 	defer db.lock.RUnlock()
 
-	// Map lookup the receipt with the id
+	// Retrieve receipt with ID
 	receipt, exists := db.receipts[id]
-
-	// Return error if there is no receipt with such id
 	if !exists {
 		return models.Receipt{}, ErrReceiptNotInDatabase
 	}
