@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid" // for generating UUID
-	"github.com/gorilla/mux" // for dynamic ID
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 
 	"receipt-processor-challenge-jase180/internal/models"
 	rules "receipt-processor-challenge-jase180/internal/services"
@@ -23,7 +23,7 @@ type ReceiptHandler struct {
 }
 
 // NewReceiptHandler creates a new handler that connects to existing database
-// Panic because database is critical.  Error less preferred
+// Panic because database is critical.  Error less preferred because webservice requires database
 func NewReceiptHandler(db *store.MemoryDatabase) *ReceiptHandler {
 	if db == nil {
 		panic("Database does not exist.  Cannot initialize.")

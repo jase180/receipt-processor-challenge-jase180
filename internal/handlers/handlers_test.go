@@ -3,10 +3,9 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -295,7 +294,7 @@ func TestCreateReceiptHandler(t *testing.T) {
 			}
 
 			result := httptest.NewRequest("POST", "/receipts/process", bytes.NewReader(body))
-			result.Header.Set("Content-Type", "application/json")
+			result.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 			// Create and response recorder and call handler
 			responseRecorder := httptest.NewRecorder()
