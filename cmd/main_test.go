@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"testing"
-	"time"
-
 	"net/http"
 	"net/http/httptest"
+	"testing"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -16,10 +15,9 @@ import (
 	"receipt-processor-challenge-jase180/internal/store"
 )
 
-// Integration test with two receipts
-// Receipts added together to test database can handle more than one test
+// TestIntegration is an integration test that verifies the functionality of the webservice as a whole
+// Two test receipts added to ensure that database can handle more than one test
 func TestIntegration(t *testing.T) {
-
 	// Reimplement server and router in main.go for testing for control and isolation
 	db := store.NewMemoryDatabase()
 	handler := handlers.NewReceiptHandler(db)
@@ -38,7 +36,7 @@ func TestIntegration(t *testing.T) {
 	server := httptest.NewServer(router)
 	defer server.Close() // proper clean up
 
-	//  Receipts JSON of all all given examples
+	//  Receipts JSON of README.md examples
 	targetReceipt := `{
 		"retailer": "Target",
 		"purchaseDate": "2022-01-01",
@@ -87,6 +85,8 @@ func TestIntegration(t *testing.T) {
 	}`
 
 	receiptsArray := []string{targetReceipt, mmCornerReceipt}
+
+	// Initialize ID array that will later be used for GET tests
 	responseIDArray := []string{}
 
 	// Send POST request for all receipts
@@ -114,10 +114,12 @@ func TestIntegration(t *testing.T) {
 		responseIDArray = append(responseIDArray, receiptID)
 	}
 
+	// Initialize Points array tfor comparing to wanted points
 	responsePointsArray := []int{}
 
-	// Fetch points from all receipts
+	// Send GET request for all IDs
 	for _, id := range responseIDArray {
+		// Send GET
 		response, err := http.Get(server.URL + "/receipts/" + id + "/points")
 		if err != nil {
 			t.Errorf("Failed to send GET: %v for %v", err, id)
@@ -152,8 +154,8 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
-// Smoke test - starting server simulating real execution using a goroutine
-// Only testing a post since purpose is to make sure main will run locally
+// TestSmoke is smoke test that starts a server in a separate goroutine to simulate real execution.
+// Test ensures that the webservice runs in a local environment - thus only testing a POST
 func TestSmoke(t *testing.T) {
 	go func() {
 		main()
@@ -170,6 +172,7 @@ func TestSmoke(t *testing.T) {
 		]
 	}`
 
+	// Try sending a POST
 	response, err := http.Post("http://localhost:8080/receipts/process", "application/json", bytes.NewBuffer([]byte(simpleReceipt)))
 	if err != nil {
 		t.Errorf("Failed to send POST: %v for %v", err, simpleReceipt)
@@ -180,5 +183,4 @@ func TestSmoke(t *testing.T) {
 	if response.StatusCode != http.StatusOK {
 		t.Errorf("Result: %d, want 200", response.StatusCode)
 	}
-
 }
