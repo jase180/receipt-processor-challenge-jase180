@@ -48,7 +48,7 @@ func CalculatePoints(receipt models.Receipt) int {
 }
 
 // Rule: One point for every alphanumeric character in the retailer name.
-// Utilizes "unicode" to check character for clarity, alternative is range based e.g. c >='a'
+// Utilizes "unicode" to check character for clarity, alternative is range based e.g. char >= 'a' && char <= 'z'
 func PointsForRetailerName(retailer string) int {
 	points := 0
 	for _, char := range retailer {
@@ -77,14 +77,17 @@ func PointsForRoundTotal(total string) (int, error) {
 	// Multiply by 100 to get an integer, round to avoid floating point error
 	totalCents := int(math.Round(totalFloat * 100))
 
+	// Check if round number
 	if totalCents%100 == 0 {
 		return 50, nil
 	}
 	return 0, nil
 }
 
-// Rule: 25 points if the total is a multiple of 0.25. MODULUS STYLE
-// simiar to CalculateRoundTotalPoints
+// Rule: 25 points if the total is a multiple of 0.25.
+// simiar implementation to CalculateRoundTotalPoints
+// Pattern provided is "^\\d+\\.\\d{2}$"
+// Since there can only be 2 decimals, check by multiply by 100 to avoid floating point errors, alternative is an epsilon
 func PointsForQuarterMultiple(total string) (int, error) {
 	// Extra defensive programming to make sure dollar is in pattern provided
 	if !regexp.MustCompile(`^\d+\.\d{2}$`).MatchString(total) {
@@ -98,6 +101,8 @@ func PointsForQuarterMultiple(total string) (int, error) {
 
 	// Multiply by 100 to get an integer, round to avoid floating point error
 	totalCents := int(math.Round(totalFloat * 100))
+
+	// Check if is multiple of 0.25
 	if totalCents%25 == 0 {
 		return 25, nil
 	}
@@ -115,16 +120,20 @@ func PointsForEveryTwoItems(items []models.Item) int {
 func PointsForItemDescription(item models.Item) (int, error) {
 	// Trim with "strings" function for simplicity and readability
 	trimmedLen := len(strings.TrimSpace(item.ShortDescription))
+
+	// Check if trimmed length is multiple of 3
 	if trimmedLen%3 != 0 || trimmedLen == 0 {
 		return 0, nil
 	}
 
+	// Convert string to float
 	priceFloat, err := strconv.ParseFloat(item.Price, 64)
 	if err != nil {
 		return 0, fmt.Errorf("cannot convert total to float: %s", item.Price)
 	}
 
-	points := int(math.Ceil(priceFloat * 0.2)) // round up to nearest and convert back to int
+	// Multiply by 0.2, round up, and convert to integer
+	points := int(math.Ceil(priceFloat * 0.2))
 	return points, nil
 }
 
@@ -138,6 +147,8 @@ func PointsForOddDay(purchaseDate string) (int, error) {
 	}
 
 	day := date.Day() // Extract day from date
+
+	// Check if day is odd
 	if day%2 == 1 {
 		return 6, nil
 	}
@@ -153,9 +164,11 @@ func PointsForTimeRange(purchaseTime string) (int, error) {
 		return 0, fmt.Errorf("cannot convert time string to time: %s", purchaseTime)
 	}
 
+	// Parse start time and end time required
 	startTime, _ := time.Parse("15:04", "14:00")
 	endTime, _ := time.Parse("15:04", "16:00")
 
+	// Check if purchase time is within time range
 	if purchaseTimeParsed.After(startTime) && purchaseTimeParsed.Before(endTime) {
 		return 10, nil
 	}

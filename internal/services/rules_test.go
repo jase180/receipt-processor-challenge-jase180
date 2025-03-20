@@ -91,7 +91,7 @@ func TestPointsForEveryTwoItems(t *testing.T) {
 	}{
 		{"5 items", []models.Item{{}, {}, {}, {}, {}}, 10},
 		{"4 items", []models.Item{{}, {}, {}, {}}, 10},
-		{"0 items", []models.Item{}, 0},
+		{"0 items", []models.Item{}, 0}, // shouldn't happen since handler validation makes sure no 0 items
 	}
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
