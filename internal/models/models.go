@@ -19,5 +19,3 @@ type Item struct {
 	ShortDescription string `json:"shortDescription"` // Short product description for Item
 	Price            string `json:"price"`            // Total price paid for Item
 }
-
-//TODO: Validation
