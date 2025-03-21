@@ -1,5 +1,88 @@
 # Receipt Processor
 
+## Overview
+This project is a simple web service built using Go.  The webservice processes and stores receipts in an in-memory database, and calculates reward points based on predefined rules, and includes unit tests to ensure accuracy.
+
+The service involves two endpoints:
+- **POST** `/receipts/process` → Accepts a receipt JSON for processing, stores it in in-memory database, and returns an ID.
+- **GET** `/receipts/{id}/points` → Retrieves the receipt with the given ID, calculates points according to business logic, and returns the points.
+
+---
+
+## Prerequisites
+
+**Option 1**: Go
+- Go (version 1.24.1 or later)
+
+**Option 2**: Docker
+- Docker installed and running on your machine
+
+---
+
+## Setup and run
+**Option 1**: Run locally with Go
+
+1. Clone the repository:
+```
+git clone https://github.com/jase180/receipt-processor-challenge-jase180.git
+cd receipt-processor-challenge-jase180  
+```
+2. Make sure dependencies are installed with go mod
+```
+go mod tidy
+```
+3. Run the webservice.  This will run locally on port 8080
+```
+go run ./cmd
+```
+
+**Option 2**: Running with Docker
+1. Build the Docker image
+```
+docker build -t receipt-processor .
+``` 
+2. Run container and expose on port 8080
+```
+docker run -p 8080:8080 receipt-processor
+```
+
+## Unit Testing
+This project includes a suite of unit tests to ensure functionality of processing the receipts, including:
+- Receipt validation
+- Points calculation
+- Handling of edge cases and invalid inputs
+
+To run the test suite:
+
+**Option** 1: Run tests locally (requires Go installed)
+```
+go test ./... 
+```
+**Option 2**: Run tests in Docker by building a separate testable image
+```
+docker build --target builder -t receipt-processor-test .
+```
+Then run the test inside the testable image
+```
+docker run --rm receipt-processor-test go test ./...
+```
+
+## Design considerations
+- In-memory storage: data does not need to persist when application stops
+- Identical duplicate receipts are allowed to be POSTed
+- Unit testing and error handling included
+- Assume this rule means range including 14:01 and 15:59, but not including 14:00 and 16:00: 
+  ```
+  10 points if the time of purchase is after 2:00pm and before 4:00pm.
+  ```
+For a more detailed breakdown, see DESIGN.md
+
+---
+---
+---
+
+## Challenge instructions
+
 Build a webservice that fulfils the documented API. The API is described below. A formal definition is provided 
 in the [api.yml](./api.yml) file. We will use the described API to test your solution.
 
